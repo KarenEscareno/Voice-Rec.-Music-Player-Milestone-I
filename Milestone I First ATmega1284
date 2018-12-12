@@ -1,0 +1,88 @@
+/*
+ * FirstBreadboard.c
+ * Author : karen
+ */ 
+
+#include <avr/io.h>
+#include "usart_ATmega1284.h"
+#include "timer.h"
+#include "spi.h"
+unsigned char Data = 0x00;
+unsigned char SecondD = 0x00;
+unsigned char old = 0xFF;
+unsigned char old2 = 0xFF;
+int main(void)
+{
+    /* Replace with your application code */
+	DDRA = 0xFF; PORTA = 0x00;
+	DDRC = 0xFF; PORTC = 0x00;
+	unsigned char button = 0x00;
+	unsigned char send = 0x06;
+	initUSART(0);
+	initUSART(1);
+	TimerOn();
+	TimerSet(500);
+    while (1) 
+    {
+		button = PINA & 0x01;
+		if (button == 0x00)
+		{
+        if(USART_IsSendReady(0))
+        {
+					USART_Send(send, 1);
+					USART_Flush(0);
+        }
+		}
+		//}
+		while (!TimerFlag);
+		TimerFlag = 0;
+    }
+}
+
+
+
+/*
+ * SecondBoard.c
+ * Author : karen
+ */ 
+
+#include <avr/io.h>
+#include "usart_ATmega1284.h"
+#include "timer.h"
+#include "io.c"
+#include "spi.h"
+unsigned int j = 0x00;
+unsigned int i = 0;
+
+int main(void)
+{
+    /* Replace with your application code */
+	DDRA = 0xFF; PORTA = 0x00;
+	DDRC = 0xFF; PORTC = 0x00;
+	DDRD = 0xFF; PORTD = 0x00;
+	unsigned char Data = 0x00;
+	initUSART(1);
+	LCD_init();
+	TimerOn();
+	TimerSet(500);
+    while (1) 
+    {
+		if(j < 0x0B)
+		{
+			LCD_DisplayString(1, "Welcome I'm MARIA");
+			j++;
+		}
+		
+		if(USART_HasReceived(1))
+		{
+			Data = USART_Receive(1);
+			if (Data == 0x06)
+			{
+				LCD_DisplayString(1, "Use Bluetooth orSay Artist/Song");
+			}
+			j = 0;
+		}
+		while (!TimerFlag);
+		TimerFlag = 0;
+    }
+}
