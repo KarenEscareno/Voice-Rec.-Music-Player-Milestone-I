@@ -29,8 +29,8 @@ int main(void)
 		{
         if(USART_IsSendReady(0))
         {
-					USART_Send(send, 1);
-					USART_Flush(0);
+		USART_Send(send, 1);
+		USART_Flush(1);
         }
 		}
 		//}
